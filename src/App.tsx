@@ -12,24 +12,22 @@ const App: FC = () => {
 	const [val, setVal] = useState<string>("")
 	const [schemaList, setSchemaList] = useState<ISchema[]>([])
 
+	useEffect(() => {
+		const fetchSubSchema = async () : Promise<void> => {
+			const mySdoAdapter = await SOA.create({schemaVersion: "latest"});
+			const subInstance = mySdoAdapter.getProperty(property);
+			setSubSchema(subInstance.getRanges())
+		}
+		if(property){
+			fetchSubSchema()
+		}
+	},[property])
+
 	const fetchSchema = async () : Promise<void> => {
 		const mySdoAdapter = await SOA.create({schemaVersion: "latest"});
 		const Instance = mySdoAdapter.getClass(`schema:${input}`);
 		setSchema(Instance.getProperties())
 	}
-
-	const fetchSubSchema = async () : Promise<void> => {
-		const mySdoAdapter = await SOA.create({schemaVersion: "latest"});
-		const subInstance = mySdoAdapter.getProperty(property);
-		setSubSchema(subInstance.getRanges())
-	}
-
-	useEffect(() => {
-		if(property){
-			fetchSubSchema()
-		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
-	},[property])
 
 	const addSchema = (serach : string, schema:string, subSchema:string, value:string ) : void => {
 		const newSchema = {name: serach, schema:{name:schema, subSchema:{name:subSchema, value: value}}}
